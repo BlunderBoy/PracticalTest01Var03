@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +21,8 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
     EditText sus;
     EditText jos;
     TextView rezultat;
+    BroadcastReciever broadcastReciever;
+    IntentFilter intentFilter;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -44,6 +47,10 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                 int termen2 = Integer.parseInt(string2);
                 rezultat.setText(string1 + " + " + string2 + " = " + (termen1+termen2));
             }
+            Intent service = new Intent(this, PracticalTest01Var03Service.class);
+            service.putExtra("unu", Integer.parseInt(String.valueOf(sus.getText())));
+            service.putExtra("doi", Integer.parseInt(String.valueOf(jos.getText())));
+            startService(service);
         });
 
         minus.setOnClickListener(l -> {
@@ -56,6 +63,11 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                 int termen2 = Integer.parseInt(string2);
                 rezultat.setText(string1 + " - " + string2 + " = " + (termen1-termen2));
             }
+
+            Intent service = new Intent(this, PracticalTest01Var03Service.class);
+            service.putExtra("unu", Integer.parseInt(String.valueOf(sus.getText())));
+            service.putExtra("doi", Integer.parseInt(String.valueOf(jos.getText())));
+            startService(service);
         });
 
         nextActivity.setOnClickListener(l -> {
@@ -63,6 +75,12 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
             intent.putExtra("rez", rezultat.getText());
             startActivityForResult(intent, 8080);
         });
+
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("adunare");
+        intentFilter.addAction("scadere");
+
+        broadcastReciever = new BroadcastReciever();
     }
 
     @Override
@@ -102,5 +120,25 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "INCORECT!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent service = new Intent(this, PracticalTest01Var03Service.class);
+        stopService(service);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+
+        unregisterReceiver(broadcastReciever);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        registerReceiver(broadcastReciever, intentFilter);
+        super.onResume();
     }
 }
