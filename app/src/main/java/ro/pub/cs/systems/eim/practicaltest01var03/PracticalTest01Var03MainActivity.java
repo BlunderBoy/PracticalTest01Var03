@@ -1,9 +1,11 @@
 package ro.pub.cs.systems.eim.practicaltest01var03;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +57,12 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                 rezultat.setText(string1 + " - " + string2 + " = " + (termen1-termen2));
             }
         });
+
+        nextActivity.setOnClickListener(l -> {
+            Intent intent = new Intent(this, PracticalTest01Var03SecondaryActivity.class);
+            intent.putExtra("rez", rezultat.getText());
+            startActivityForResult(intent, 8080);
+        });
     }
 
     @Override
@@ -82,5 +90,17 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
             toast += " rezultat";
         }
         Toast.makeText(this, "Restuarat " + toast, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 8080) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "CORECT!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "INCORECT!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
